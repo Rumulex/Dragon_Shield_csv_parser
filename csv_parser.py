@@ -1,46 +1,48 @@
 import csv
-import sys
+import os
+from datetime import datetime
 
-def parse_csv(input_file, output_file):
-    # Step 1: Reading the CSV File and Skip First Row
-    with open(input_file, 'r', newline='') as input_csv:
-        reader = csv.reader(input_csv)
-        next(reader)  # Skiping the first row with redundant "sep=,"
+def parse_csv_files(input_dir, output_dir):
+    # Initialize an empty list to store combined data
+    combined_data = []
 
-        # Step 2: Processing the Input Data
-        mapped_data = []
-        for row in reader:
-            # Step 3: Mapping Data to Template (Selecting and Renaming Columns)
-            mapped_row = {
-                'Quantity': row[1],
-                'Card Name': row[3],
-                'Set Name': row[5],
-                'Foil/Variant': row[8],     # Renamed from 'Printing' to 'Foil/Variant'
-                'Card Number': row[6]       # Renamed from 'Collector Number'
-            }
-            mapped_data.append(mapped_row)
+    # Step 1: Process each CSV file in the input directory
+    for filename in os.listdir(input_dir):
+        if filename.endswith(".csv"):
+            input_file = os.path.join(input_dir, filename)
+            with open(input_file, 'r', newline='') as input_csv:
+                reader = csv.reader(input_csv)
+                # Skip the first two rows (one with "sep=," and one with headers)
+                next(reader)
+                next(reader)
+                
+                # Step 2: Process the Input Data
+                for row in reader:
+                    # Step 3: Map Data to Template (Selecting and Renaming Columns)
+                    mapped_row = {
+                        'Quantity': row[1],        # Adjusted index from 0 to 1
+                        'Card Name': row[2],       # Adjusted index from 1 to 2
+                        'Set Name': row[3],        # Adjusted index from 2 to 3
+                        'Foil/Variant': row[4],    # Adjusted index from 7 to 4
+                        'Card Number': row[5]      # Adjusted index from 6 to 5
+                    }
+                    combined_data.append(mapped_row)
 
-    # Removing the header row from mapped_data
-    mapped_data.pop(0)
-
-    # Step 4: Writing to Output CSV
+    # Step 4: Write to Output CSV
+    output_file = os.path.join(output_dir, f"output_{datetime.now().strftime('%Y%m%d%H%M%S')}.csv")
     with open(output_file, 'w', newline='') as output_csv:
         fieldnames = ['Quantity', 'Card Name', 'Set Name', 'Foil/Variant', 'Card Number']  # Updated fieldnames
         writer = csv.DictWriter(output_csv, fieldnames=fieldnames)
         
-        # Writing the header with updated column names
+        # Write the header with updated column names
         writer.writeheader()
         
-        # Writing the data
-        writer.writerows(mapped_data)
+        # Write the combined data
+        writer.writerows(combined_data)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python csv_parser.py <input_file> <output_file>")
-        sys.exit(1)
-    input_file = sys.argv[1]
-    output_file = sys.argv[2]
-    parse_csv(input_file, output_file)
-
-# # Example usage:
-# python csv_parser.py input_data.csv output.csv
+    input_dir = "Input"    # Default input directory
+    output_dir = "Output"  # Output directory
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)  # Create the output directory if it doesn't exist
+    parse_csv_files(input_dir, output_dir)
