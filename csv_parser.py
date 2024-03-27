@@ -4,7 +4,7 @@ from datetime import datetime
 import shutil
 
 def parse_csv_files(input_dir, output_dir):
-    # Initializi an empty list to store data
+    # Initialize an empty list to store data
     combined_data = []
 
     # Step 1: Processing each CSV file from the input directory
@@ -19,13 +19,13 @@ def parse_csv_files(input_dir, output_dir):
                 
                 # Step 2: Processing the Input Data
                 for row in reader:
-                    # Step 3: Maping Data to Template (Selecting and Renaming Columns)
+                    # Step 3: Mapping Data to Template (Selecting and Renaming Columns)
                     mapped_row = {
-                        'Quantity': row[1],        # Adjusted index from 0 to 1
-                        'Card Name': row[2],       # Adjusted index from 1 to 2
-                        'Set Name': row[3],        # Adjusted index from 2 to 3
-                        'Foil/Variant': row[4],    # Adjusted index from 7 to 4
-                        'Card Number': row[5]      # Adjusted index from 6 to 5
+                        'Quantity': row[1],           # Quantity column
+                        'Card Name': row[3],          # Card Name column
+                        'Set Name': row[5],           # Set Name column
+                        'Foil/Variant': row[8],           # Print type column
+                        'Card Number': row[6]         # Card Number column
                     }
                     combined_data.append(mapped_row)
 
